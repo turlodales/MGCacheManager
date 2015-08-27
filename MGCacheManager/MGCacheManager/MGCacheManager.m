@@ -12,11 +12,21 @@
 #define CACHE_DIRECTORY_NAME @"cache"
 #define SECS_CLEAN_CACHE 10
 
+/**
+ *  create cache cleaning background thread
+ */
 +(void)initializeExpiredCachesCleanerTimer {
     [MGCacheManager cleanExpiredCaches];
     [NSTimer scheduledTimerWithTimeInterval:60*SECS_CLEAN_CACHE target:self selector:@selector(cleanExpiredCaches) userInfo:nil repeats:YES];
 }
 
+/**
+ *  Check if Cachable endpoints list contains the target endpoint
+ *
+ *  @param endPoint = Target Path ( without website url )
+ *
+ *  @return Bool
+ */
 +(BOOL)endPointsContainsEndPoint:(NSString *)endPoint {
     
     [MGCacheManager createDirectoryForCaches];
@@ -26,11 +36,11 @@
     }
     
     NSArray * endPointsWithCachePeriod = [[NSArray alloc]initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"endPointsToCache" ofType:@"plist"]];
-    NSLog(@"endpointWoNumbers : %@",endPoint);
+    [MGCacheManager MGNSLOG:@"endpointWoNumbers : %@",endPoint];
+    
     for (int i = 0; i < [endPointsWithCachePeriod count]; i++) {
 
-        if ([[[endPointsWithCachePeriod objectAtIndex:i] objectAtIndex:0] myStringContains:endPoint]) {
-            NSLog(@"endpoint Found\n %@",endPoint);
+        if ([endPoint myStringContains:[[endPointsWithCachePeriod objectAtIndex:i] objectAtIndex:0]]) {
             return YES;
         }
     }
@@ -38,13 +48,20 @@
     return NO;
 }
 
+/**
+ *  Validate existance of the target patch cache file
+ *
+ *  @param endPoint Target Path
+ *
+ *  @return Bool
+ */
 +(BOOL)validateEndPointCacheFileExistanceForEndPoint:(NSString *)endPoint{
     
     endPoint = [MGCacheManager endPoint:endPoint];
     NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
     NSString * path = [documentsPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@/%@",CACHE_DIRECTORY_NAME,endPoint]];
     
-    NSLog(@"Path : %@",path);
+    [MGCacheManager MGNSLOG:@"Path : %@",path];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
     if ([fileManager fileExistsAtPath:path]){
@@ -54,7 +71,7 @@
         
         NSDate *expirationDate = [fileCreationDate dateByAddingTimeInterval:+60*[MGCacheManager findExpirationPeriodOfEndPoint:[endPoint stringByReplacingOccurrencesOfString:@"_" withString:@"/"]]];
         
-        NSLog(@"expirateionDate : %@\nNow : %@",expirationDate,[NSDate dateWithTimeIntervalSinceNow:0]);
+        [MGCacheManager MGNSLOG:@"expirateionDate : %@\nNow : %@",expirationDate,[NSDate dateWithTimeIntervalSinceNow:0]];
         
         if ([expirationDate compare:[NSDate dateWithTimeIntervalSinceNow:0]] == NSOrderedAscending) {
             
@@ -62,7 +79,7 @@
             if ([[NSFileManager defaultManager] isDeletableFileAtPath:path]) {
                 BOOL success = [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
                 
-                !success ? NSLog(@"Error removing file at path: %@", error.localizedDescription) : NSLog(@"File Expired");
+                !success ? [MGCacheManager MGNSLOG:@"Error removing file at path: %@", error.localizedDescription] : [MGCacheManager MGNSLOG:@"File Expired"];
             }
             return NO;
         }
@@ -75,6 +92,13 @@
     return NO;
 }
 
+/**
+ *  Check expiration date of the cached target path file
+ *
+ *  @param endPoint target path ( without URL )
+ *
+ *  @return expiration time
+ */
 +(int)findExpirationPeriodOfEndPoint:(NSString *)endPoint {
     
     for (int i = 0; i <= 9 ; i++) {
@@ -94,6 +118,14 @@
     return -1;
 }
 
+/**
+ *  save target path to cache
+ *
+ *  @param response api response
+ *  @param endPoint for target path
+ *
+ *  @return cached response
+ */
 +(id)saveAndReturnEndPointResponse:(id)response
                           endPoint:(NSString *)endPoint
 {
@@ -111,13 +143,20 @@
         
         [jsonData writeToFile:path atomically:YES];
         
-        NSLog(@"saveAndReturnEndPointResponse : %@",response);
+        [MGCacheManager MGNSLOG:@"saveAndReturnEndPointResponse : %@",response];
         return [MGCacheManager loadDataFromCacheForEndPoint:endPoint];
     }
     else
         return response;
 }
 
+/**
+ *  load target path data from cache
+ *
+ *  @param endPoint target path
+ *
+ *  @return content of cached endpoint data
+ */
 +(id)loadDataFromCacheForEndPoint:(NSString *)endPoint  {
     endPoint = [MGCacheManager endPoint:endPoint];
     
@@ -125,17 +164,20 @@
     
     NSData *myJSON = [[NSData alloc] initWithContentsOfFile:[documentsPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@/%@",CACHE_DIRECTORY_NAME,endPoint]]];
     
-    NSLog(@"documentsPath : %@",[documentsPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@/%@",CACHE_DIRECTORY_NAME,endPoint]]);
+    [MGCacheManager MGNSLOG:@"documentsPath : %@",[documentsPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@/%@",CACHE_DIRECTORY_NAME,endPoint]]];
     NSError *error;
     
     NSMutableDictionary * jsonFileContent = [[NSJSONSerialization JSONObjectWithData:myJSON
                                                                              options: NSJSONReadingMutableContainers
                                                                                error:&error] mutableCopy];
-    NSLog(@"jsonData : %@",jsonFileContent);
+    [MGCacheManager MGNSLOG:@"jsonData : %@",jsonFileContent];
     return jsonFileContent;
     
 }
 
+/**
+ *  create directory to save cache
+ */
 +(void)createDirectoryForCaches {
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -146,10 +188,20 @@
     }
 }
 
+/**
+ *  remove path slashs from target path
+ *
+ *  @param endPoint target path
+ *
+ *  @return new formed target path
+ */
 +(NSString *)endPoint:(NSString *)endPoint {
     return [endPoint stringByReplacingOccurrencesOfString:@"/" withString:@"_"];
 }
 
+/**
+ *  clean expired cached files
+ */
 +(void)cleanExpiredCaches {
     
     NSArray * endPointsWithCachePeriod = [[NSArray alloc]initWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"endPointsToCache" ofType:@"plist"]];
@@ -164,8 +216,8 @@
     for (int i = 0; i < [endPointsWithCachePeriod count]; i++) {
         
         for (int x = 0; x < [filePathsArray count]; x++) {
-            NSLog(@"endPointsWithCachePeriod : %@",[[endPointsWithCachePeriod objectAtIndex:i] objectAtIndex:0]);
-            NSLog(@"filePathsArray : %@",[[filePathsArray objectAtIndex:x] stringByReplacingOccurrencesOfString:@"_" withString:@"/"]);
+            [MGCacheManager MGNSLOG:@"endPointsWithCachePeriod : %@",[[endPointsWithCachePeriod objectAtIndex:i] objectAtIndex:0]];
+            [MGCacheManager MGNSLOG:@"filePathsArray : %@",[[filePathsArray objectAtIndex:x] stringByReplacingOccurrencesOfString:@"_" withString:@"/"]];
             
             if ([[[endPointsWithCachePeriod objectAtIndex:i] objectAtIndex:0] myStringContains:[[[filePathsArray objectAtIndex:x] stringByReplacingOccurrencesOfString:@"_" withString:@"/"] stringByDeletingLastPathComponent]]) {
                 
@@ -173,7 +225,7 @@
                 NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
                 NSString * path = [documentsPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@/%@",CACHE_DIRECTORY_NAME,[filePathsArray objectAtIndex:x]]];
                 
-                NSLog(@"Path : %@",path);
+                [MGCacheManager MGNSLOG:@"Path : %@",path];
                 NSFileManager *fileManager = [NSFileManager defaultManager];
                 
                 if ([fileManager fileExistsAtPath:path]){
@@ -183,7 +235,7 @@
                     
                     NSDate *expirationDate = [fileCreationDate dateByAddingTimeInterval:+60*[MGCacheManager findExpirationPeriodOfEndPoint:[[endPointsWithCachePeriod objectAtIndex:i] objectAtIndex:0]]];
                     
-                    NSLog(@"expirateionDate : %@\nNow : %@",expirationDate,[NSDate dateWithTimeIntervalSinceNow:0]);
+                    [MGCacheManager MGNSLOG:@"expirateionDate : %@\nNow : %@",expirationDate,[NSDate dateWithTimeIntervalSinceNow:0]];
                     
                     if ([expirationDate compare:[NSDate dateWithTimeIntervalSinceNow:0]] == NSOrderedAscending) {
                         
@@ -191,7 +243,7 @@
                         if ([[NSFileManager defaultManager] isDeletableFileAtPath:path]) {
                             BOOL success = [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
                             
-                            !success ? NSLog(@"Error removing file at path: %@", error.localizedDescription) : NSLog(@"File Deleted");
+                            !success ? [MGCacheManager MGNSLOG:@"Error removing file at path: %@", error.localizedDescription] : [MGCacheManager MGNSLOG:@"File Deleted"];
                         }
                     }
                 }
@@ -204,11 +256,33 @@
     
 }
 
+/**
+ *  NSLog only during debugging mode
+ *
+ *  @param format parameters
+ */
++(void)MGNSLOG:(NSString *)format, ...{
+#ifndef NDEBUG
+    va_list args;
+    va_start(args, format);
+    NSString *msg = [[NSString alloc] initWithFormat:format arguments:args];
+    va_end(args);
+    NSLog(@"%@",msg);
+#endif
+}
+
 @end
 
 
 @implementation NSString (Contains)
 
+/**
+ *  check if text contains other text
+ *
+ *  @param string comparable text
+ *
+ *  @return bool
+ */
 - (BOOL)myStringContains:(NSString*)string {
     NSRange range = [self rangeOfString:string];
     return range.length != 0;
