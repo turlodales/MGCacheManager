@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.platform = :ios, '6.0'
   s.requires_arc = true
   s.source_files = 'MGCacheManager/MGCacheManager'
-  s.public_header_files = 'MGCacheManager/MGCacheManager/*.h','MGCacheManager/MGCacheManager/*.plist'
+  s.public_header_files = 'MGCacheManager/MGCacheManager/*.h'
 
   s.ios.deployment_target = '6.0'
 end
