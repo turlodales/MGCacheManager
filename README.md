@@ -17,6 +17,9 @@ First Run Response Time 1.891051 sec
 
 Second Run Response Time 0.025160 sec
 
+**Workflow**
+
+![Workflow](http://mortgy.com/mortgy/MGCacheManager.png)
 
 #At App Delegate Implementation
 
@@ -107,3 +110,4 @@ Index 0 is endpoint path
 Index 1 is duration ( 1 = 1 minute )
 
 Any issues or recommendations , please contact me or open a new issue
+
