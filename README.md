@@ -46,7 +46,7 @@ Second Run Response Time 0.025160 sec
     if ([MGCacheManager endPointsContainsEndPoint:path]) {
         NSLog(@"YES Contains path");
         if ([MGCacheManager validateEndPointCacheFileExistanceForEndPoint:path]) {
-            NSLog(@"YES Fild Found");
+            NSLog(@"YES File Found");
             
             complete([MGCacheManager loadDataFromCacheForEndPoint:path]);
             return;
