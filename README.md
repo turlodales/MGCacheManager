@@ -19,22 +19,11 @@ Second Run Response Time 0.025160 sec
 
 ![Workflow](https://raw.githubusercontent.com/Mortgy/MGCacheManager/1.0.x/How-it-works.png)
 
-#At App Delegate Implementation
+#Example for Request ( Using AFNetworking )
 
 ```sh
  #import "MGCacheManager.h"
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
-    [MGCacheManager initializeExpiredCachesCleanerTimer];
-    return YES;
-}
-```
-
-
-#Example for Request ( Using AFNetworking )
-
-```sh
  + (void)getPosts:(void (^)(id JSON))complete
 {
 	id cache = [MGCacheManager loadDataFromCacheFileNameKey:@"posts"];
