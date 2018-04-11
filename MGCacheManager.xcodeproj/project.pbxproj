@@ -16,7 +16,6 @@
 		50B0654A1B0C9E7500B9A2E8 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 50B065481B0C9E7500B9A2E8 /* LaunchScreen.xib */; };
 		50B065561B0C9E7500B9A2E8 /* MGCacheManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B065551B0C9E7500B9A2E8 /* MGCacheManagerTests.m */; };
 		50B065621B0CA0DD00B9A2E8 /* MGCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B065611B0CA0DD00B9A2E8 /* MGCacheManager.m */; };
-		50B065641B0CA23800B9A2E8 /* endPointsToCache.plist in Resources */ = {isa = PBXBuildFile; fileRef = 50B065631B0CA23800B9A2E8 /* endPointsToCache.plist */; };
 		50B065671B0CA4E100B9A2E8 /* API.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B065661B0CA4E100B9A2E8 /* API.m */; };
 /* End PBXBuildFile section */
 
@@ -47,7 +46,6 @@
 		50B065551B0C9E7500B9A2E8 /* MGCacheManagerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MGCacheManagerTests.m; sourceTree = "<group>"; };
 		50B065601B0CA0DD00B9A2E8 /* MGCacheManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MGCacheManager.h; path = MGCacheManager/MGCacheManager.h; sourceTree = "<group>"; };
 		50B065611B0CA0DD00B9A2E8 /* MGCacheManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MGCacheManager.m; path = MGCacheManager/MGCacheManager.m; sourceTree = "<group>"; };
-		50B065631B0CA23800B9A2E8 /* endPointsToCache.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = endPointsToCache.plist; path = MGCacheManager/endPointsToCache.plist; sourceTree = "<group>"; };
 		50B065651B0CA4E100B9A2E8 /* API.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = API.h; sourceTree = "<group>"; };
 		50B065661B0CA4E100B9A2E8 /* API.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = API.m; sourceTree = "<group>"; };
 		E17EDB591BB19FAF8B94A09C /* libPods-MGCacheManager.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MGCacheManager.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -142,7 +140,6 @@
 			children = (
 				50B065601B0CA0DD00B9A2E8 /* MGCacheManager.h */,
 				50B065611B0CA0DD00B9A2E8 /* MGCacheManager.m */,
-				50B065631B0CA23800B9A2E8 /* endPointsToCache.plist */,
 			);
 			name = MGCacheManager;
 			sourceTree = "<group>";
@@ -210,7 +207,7 @@
 		50B0652E1B0C9E7500B9A2E8 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0630;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = mortgy;
 				TargetAttributes = {
 					50B065351B0C9E7500B9A2E8 = {
@@ -249,7 +246,6 @@
 				50B065451B0C9E7500B9A2E8 /* Main.storyboard in Resources */,
 				50B0654A1B0C9E7500B9A2E8 /* LaunchScreen.xib in Resources */,
 				50B065471B0C9E7500B9A2E8 /* Images.xcassets in Resources */,
-				50B065641B0CA23800B9A2E8 /* endPointsToCache.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,19 +350,30 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -398,13 +405,23 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -433,8 +450,10 @@
 			baseConfigurationReference = 082F81EA6C4C0089FD3EF9F8 /* Pods-MGCacheManager.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = MGCacheManager/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mortgy.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -444,8 +463,10 @@
 			baseConfigurationReference = FB433C3B79F0744D3B527469 /* Pods-MGCacheManager.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = MGCacheManager/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mortgy.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -454,6 +475,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -464,6 +486,7 @@
 				);
 				INFOPLIST_FILE = MGCacheManagerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mortgy.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MGCacheManager.app/MGCacheManager";
 			};
@@ -473,12 +496,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = MGCacheManagerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mortgy.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MGCacheManager.app/MGCacheManager";
 			};
