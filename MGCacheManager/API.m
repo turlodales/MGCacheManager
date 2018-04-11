@@ -14,7 +14,7 @@
 
 @implementation API
 
-//Get Movies
+//Get Posts
 + (void)getPosts:(void (^)(id JSON))complete
 {
 	id cache = [MGCacheManager loadDataFromCacheFileNameKey:@"posts"];

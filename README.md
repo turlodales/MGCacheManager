@@ -1,11 +1,9 @@
 # MGCacheManager
 
--A tool to manage caches with adding timing for each endpoint when to expire.
+-A tool to manage caches with expiry date.
 
 Advantages : 
--Improves speed for any Application relaying on HTTP API.
--Managing which endpoints responses to cache.
--Useful for API's which doesn't support ( HTTP Status code 304 ) responses.
+-Improves any Application performance requires caching content or Apps relaying on HTTP API.
 
 *** NOTE ***
 
@@ -19,7 +17,7 @@ Second Run Response Time 0.025160 sec
 
 **Workflow**
 
-![Workflow](http://mortgy.com/mortgy/MGCacheManager.png)
+![Workflow](https://raw.githubusercontent.com/Mortgy/MGCacheManager/1.0.x/MGCacheManager/How-it-works.png)
 
 #At App Delegate Implementation
 
@@ -37,77 +35,22 @@ Second Run Response Time 0.025160 sec
 #Example for Request ( Using AFNetworking )
 
 ```sh
- + (void)sendGetPayload:(NSDictionary *)parameters
-                toPath:(NSString *)path
-    withLoadingMessage:(NSString *)loadingMessage
-              complete:(void (^)(id JSON))complete{
-    
-    BOOL cachableButFileNotFound = NO;
-    if ([MGCacheManager endPointsContainsEndPoint:path]) {
-        NSLog(@"YES Contains path");
-        if ([MGCacheManager validateEndPointCacheFileExistanceForEndPoint:path]) {
-            NSLog(@"YES File Found");
-            
-            complete([MGCacheManager loadDataFromCacheForEndPoint:path]);
-            return;
-        }
-        else
-        {
-            cachableButFileNotFound = YES;
-        }
-    }
-    
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    [manager.requestSerializer setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
-    
-    manager.responseSerializer = [AFJSONResponseSerializer serializer];
-    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-    
-    manager.responseSerializer.stringEncoding = NSUTF8StringEncoding;
-    
-    [manager GET:[NSString stringWithFormat:@"%@%@",kAPIURL,path] parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject)
-     {
-         
-         if(complete != nil)
-         {
-             if (cachableButFileNotFound) {
-                 
-                 if(complete != nil) complete([MGCacheManager saveAndReturnEndPointResponse:responseObject endPoint:path]);
-                 
-             }
-             else
-             {
-                 if(complete != nil) complete(responseObject);
-             }
-         }
-         
-         
-     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-         
-         NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
-         [params setValue:[NSString stringWithFormat:@"%ld",(long)[operation.response statusCode]] forKey:@"responseCode"];
-         if(complete != nil) complete(params);
-         
-     }];
+ + (void)getPosts:(void (^)(id JSON))complete
+{
+	id cache = [MGCacheManager loadDataFromCacheFileNameKey:@"posts"];
+	
+	if (cache) {
+		complete(cache);
+		return;
+	}
+	
+    [API sendGetPayload:nil toPath:@"posts" withLoadingMessage:nil complete:^(id JSON){
+        
+		complete([MGCacheManager saveAndReturnKeyResponse:JSON key:@"posts" cachePeriod:LONG_CACHE_DURATION]);
+
+    }];
 }
 ```
-
-In "endPointsToCache.plist" you'll have to follow the same structure while adding your endpoints
-
-```sh
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<array>
-	<string>posts</string>
-	<string>720</string>
-</array>
-</plist>
-```
-
-Index 0 is endpoint path
-
-Index 1 is duration ( 1 = 1 minute )
 
 Any issues or recommendations , please contact me or open a new issue
 
