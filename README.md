@@ -17,7 +17,7 @@ Second Run Response Time 0.025160 sec
 
 **Workflow**
 
-![Workflow](https://raw.githubusercontent.com/Mortgy/MGCacheManager/1.0.x/MGCacheManager/How-it-works.png)
+![Workflow](https://raw.githubusercontent.com/Mortgy/MGCacheManager/1.0.x/How-it-works.png)
 
 #At App Delegate Implementation
 
