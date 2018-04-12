@@ -23,7 +23,6 @@
  @param response could be any data or any class the conforms to  NSEncoder
  @param key generatd through buildKey:
  @param cachePeriod if defined, cahce will expire everytime the date matches, if not, it will be permenant cache
- @return saved object
  */
 + (void)asyncSaveAndReturnKeyResponse:(id)response
 								  key:(NSString *)key
@@ -63,8 +62,6 @@
 /**
  delete all caches before a specific date ( could be triggered through an API flag or a notification
  to purge all caches on device
-
- @param unixDate
  */
 + (void)deleteAllCachesBeforeDate:(NSNumber *)unixDate;
 
@@ -83,6 +80,6 @@
  @param params endpoint request parameters / could be set as a custom parameters
  @return key / used as a cache filename
  */
-+ (NSString *)buildKey:(NSDictionary*)params;
++ (NSString *)buildKey:(NSDictionary *)params;
 
 @end
