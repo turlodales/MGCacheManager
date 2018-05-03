@@ -171,6 +171,16 @@ extern BOOL isNull(id value)
 	}
 }
 
++ (void)deleteCachedFileForKey:(NSString *)key {
+
+	NSString * path = [DOCUMENTS_DIRECTORY_PATH stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@/%@%@",CACHE_DIRECTORY_NAME, CACHE_SALT_KEY, key]];
+	NSError *error;
+	if ([[NSFileManager defaultManager] isDeletableFileAtPath:path]) {
+		BOOL success = [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
+		!success ? NSLog(@"Error removing file at path: %@", error.localizedDescription) : NSLog(@"File Deleted");
+	}
+}
+
 + (NSString*)buildKey:(NSDictionary*)params {
 	NSMutableString *key = [NSMutableString new];
 	for (NSString *paramKey in params) {

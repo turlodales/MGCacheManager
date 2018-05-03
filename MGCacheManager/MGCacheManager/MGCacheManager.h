@@ -65,6 +65,11 @@
  */
 + (void)deleteAllCachesBeforeDate:(NSNumber *)unixDate;
 
+/**
+ delete cache for key
+ @key file name key
+ */
++ (void)deleteCachedFileForKey:(NSString *)key;
 
 /**
  manually clean up only expired caches, it's done automatically in case if the same requested file
