@@ -17,7 +17,7 @@
 //Get Posts
 + (void)getPosts:(void (^)(id JSON))complete
 {
-	id cache = [MGCacheManager loadDataFromCacheFileNameKey:@"posts"];
+	id cache = [MGCacheManager loadDataFromCacheFileNameKey:@"posts" fromDirectoryName:@"posts"];
 	
 	if (cache) {
 		complete(cache);
@@ -26,7 +26,7 @@
 	
     [API sendGetPayload:nil toPath:@"posts" withLoadingMessage:nil complete:^(id JSON){
         
-		complete([MGCacheManager saveAndReturnKeyResponse:JSON key:@"posts" cachePeriod:LONG_CACHE_DURATION]);
+		complete([MGCacheManager saveAndReturnKeyResponse:JSON key:@"posts" directoryName:@"posts" cachePeriod:MGCACHE_LONG_DURATION]);
 
     }];
 }

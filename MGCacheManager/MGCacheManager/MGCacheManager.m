@@ -43,7 +43,7 @@ extern BOOL isNull(id value)
 		
 		if ([expirationDate compare:[NSDate dateWithTimeIntervalSinceNow:0]] == NSOrderedAscending) {
 			
-			[self deleteCachedFileForFileNameKey:fileNameKey];
+			[self deleteCachedFileForFileNameKey:fileNameKey fromDirectoryName:nil];
 			
 			return NO;
 		}
@@ -65,19 +65,20 @@ extern BOOL isNull(id value)
 
 +(void)asyncSaveAndReturnKeyResponse:(id)response
 								 key:(NSString *)key
+                       directoryName:(NSString *)directoryName
 						 cachePeriod:(NSNumber *)cachePeriod{
 	
 	dispatch_queue_t apiQueue = dispatch_queue_create("ApiQueue",NULL);
 	dispatch_async(apiQueue, ^{
-		[self saveAndReturnKeyResponse:response key:key cachePeriod:cachePeriod];
+		[self saveAndReturnKeyResponse:response key:key directoryName:directoryName cachePeriod:cachePeriod];
 	});
 }
 
 +(id)saveAndReturnKeyResponse:(id)response
 						  key:(NSString *)key
+                directoryName:(NSString *)directoryName
 				  cachePeriod:(NSNumber *)cachePeriod {
 	
-	[self createDirectoryForCaches];
 	
 	NSData *data = [NSKeyedArchiver archivedDataWithRootObject:response];
 	key = [NSString stringWithFormat:@"%@%@", CACHE_SALT_KEY, key];
@@ -87,18 +88,38 @@ extern BOOL isNull(id value)
 	}
 	
 	if (data) {
-		NSString * path = [DOCUMENTS_DIRECTORY_PATH stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@/%@",CACHE_DIRECTORY_NAME, key]];
+		NSMutableString * path = [[NSMutableString alloc] initWithString:[DOCUMENTS_DIRECTORY_PATH stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@", CACHE_DIRECTORY_NAME]]];
+        
+        [self createDirectoryForCachesAtPath:path];
+
+        if (directoryName) {
+            [path appendString:[NSString stringWithFormat:@"/%@",  directoryName]];
+            [self createDirectoryForCachesAtPath:path];
+        }
+        
+        [path appendString:[NSString stringWithFormat:@"/%@",  key]];
+
 		[data writeToFile:path atomically:YES];
 	}
 	
 	return response;
 }
 
-+ (id)loadDataFromCacheFileNameKey:(NSString *)fileNameKey  {
++ (id)loadDataFromCacheFileNameKey:(NSString *)fileNameKey fromDirectoryName:(NSString *)directoryName {
 	
 	if ([self validateCachedFileExistanceForKey:fileNameKey]) {
 		fileNameKey = [NSString stringWithFormat:@"%@%@", CACHE_SALT_KEY, fileNameKey];
-		NSData *data = [[NSData alloc] initWithContentsOfFile:[DOCUMENTS_DIRECTORY_PATH stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@/%@",CACHE_DIRECTORY_NAME, fileNameKey]]];
+        
+        NSMutableString * path = [[NSMutableString alloc] initWithString:[DOCUMENTS_DIRECTORY_PATH stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@", CACHE_DIRECTORY_NAME]]];
+        
+        if (directoryName) {
+            [path appendString:[NSString stringWithFormat:@"/%@",  directoryName]];
+        }
+        
+        [path appendString:[NSString stringWithFormat:@"/%@",  fileNameKey]];
+
+        
+		NSData *data = [[NSData alloc] initWithContentsOfFile:path];
 		
 		data = [NSKeyedUnarchiver unarchiveObjectWithData:data];
 		return data;
@@ -107,12 +128,25 @@ extern BOOL isNull(id value)
 	}
 }
 
-+ (void)createDirectoryForCaches {
++ (void)createDirectoryForCachesAtPath:(NSString *)path {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSString *folderName = [DOCUMENTS_DIRECTORY_PATH stringByAppendingPathComponent:CACHE_DIRECTORY_NAME];
-	if (![fileManager fileExistsAtPath:folderName]) {
-		[fileManager createDirectoryAtPath:folderName withIntermediateDirectories:NO attributes:nil error:nil];
+	if (![fileManager fileExistsAtPath:path]) {
+		[fileManager createDirectoryAtPath:path withIntermediateDirectories:NO attributes:nil error:nil];
 	}
+}
+
++ (NSArray *)filesInFolderName:(NSString *)folderName  {
+    NSError  *error;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSMutableString * rootPath = [[NSMutableString alloc] initWithString:[DOCUMENTS_DIRECTORY_PATH stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@/%@", CACHE_DIRECTORY_NAME, folderName]]];
+    [self createDirectoryForCachesAtPath:rootPath];
+    BOOL onlyDirectory = YES;
+    if ([fileManager fileExistsAtPath:rootPath isDirectory:&onlyDirectory]) {
+        NSArray *filesAtPath = [fileManager contentsOfDirectoryAtPath:rootPath error:&error];
+        return filesAtPath;
+    } else {
+        return @[];
+    }
 }
 
 + (void)cleanExpiredCaches {
@@ -124,21 +158,36 @@ extern BOOL isNull(id value)
 	
 	for (NSString *fileNameKey in expirableCacheKeys) {
 		
-		NSString * path = [DOCUMENTS_DIRECTORY_PATH stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@/%@", CACHE_DIRECTORY_NAME, fileNameKey]];
-		NSFileManager *fileManager = [NSFileManager defaultManager];
-		
-		if ([fileManager fileExistsAtPath:path]){
-			
-			NSDictionary* fileAttribs = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
-			NSDate *fileCreationDate = [fileAttribs objectForKey:NSFileCreationDate];
-			
-			NSDate *expirationDate = [fileCreationDate dateByAddingTimeInterval:+MGCACHE_MINUTE_IN_SECONDS*[self findExpirationPeriodOfKey:fileNameKey]];
-						
-			if ([expirationDate compare:[NSDate dateWithTimeIntervalSinceNow:0]] == NSOrderedAscending) {
-				
-				[self deleteCachedFileForFileNameKey:fileNameKey];
-			}
-		}
+        NSError  *error;
+        NSMutableString * rootPath = [[NSMutableString alloc] initWithString:[DOCUMENTS_DIRECTORY_PATH stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@", CACHE_DIRECTORY_NAME]]];
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+
+        NSArray *filesAtPath = [fileManager contentsOfDirectoryAtPath:rootPath error:&error];
+
+        if ([filesAtPath containsObject:fileNameKey]) {
+            NSString *path = [NSString stringWithFormat:@"%@/%@",rootPath, fileNameKey];
+            NSDictionary* fileAttribs = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
+            NSDate *fileCreationDate = [fileAttribs objectForKey:NSFileCreationDate];
+            
+            NSDate *expirationDate = [fileCreationDate dateByAddingTimeInterval:+MGCACHE_MINUTE_IN_SECONDS*[self findExpirationPeriodOfKey:fileNameKey]];
+                        
+            if ([expirationDate compare:[NSDate dateWithTimeIntervalSinceNow:0]] == NSOrderedAscending) {
+                
+                [self deleteCachedFileForFileNameKey:fileNameKey fromDirectoryName:nil];
+            }
+
+        } else {
+            for (NSString *folderName in filesAtPath) {
+                NSString *copyPath = [NSString stringWithFormat:@"%@/%@", rootPath, folderName];
+                BOOL onlyDirectory = YES;
+                if ([fileManager fileExistsAtPath:copyPath isDirectory:&onlyDirectory]) {
+                    NSString *filePath = [NSString stringWithFormat:@"%@/%@/%@", rootPath, folderName, fileNameKey];
+                    if ([fileManager fileExistsAtPath:filePath]) {
+                        [self deleteCachedFileForFileNameKey:fileNameKey fromDirectoryName:folderName];
+                    }
+                }
+            }
+        }
 	}
 }
 
@@ -153,7 +202,7 @@ extern BOOL isNull(id value)
 		
 		if ([fileManager fileExistsAtPath:path]){
 			if ([date compare:[NSDate dateWithTimeIntervalSince1970:0]] == NSOrderedAscending) {
-				[self deleteCachedFileForFileNameKey:fileName];
+				[self deleteCachedFileForFileNameKey:fileName fromDirectoryName:nil];
 			}
 		}
 	}
@@ -161,20 +210,17 @@ extern BOOL isNull(id value)
 	[[NSUserDefaults standardUserDefaults] setObject:unixDate forKey:@"latestForcedCacheDeletion"];
 }
 
-+ (void)deleteCachedFileForFileNameKey:(NSString *)fileNameKey {
++ (void)deleteCachedFileForFileNameKey:(NSString *)fileNameKey fromDirectoryName:(NSString *)directoryName {
 	
-	NSString * path = [DOCUMENTS_DIRECTORY_PATH stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@/%@",CACHE_DIRECTORY_NAME, fileNameKey]];
-	NSError *error;
-	if ([[NSFileManager defaultManager] isDeletableFileAtPath:path]) {
-		BOOL success = [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
-		!success ? NSLog(@"Error removing file at path: %@", error.localizedDescription) : NSLog(@"File Deleted");
-	}
-}
+    NSMutableString * path = [[NSMutableString alloc] initWithString:[DOCUMENTS_DIRECTORY_PATH stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@", CACHE_DIRECTORY_NAME]]];
+    
+    if (directoryName) {
+        [path appendString:[NSString stringWithFormat:@"/%@",  directoryName]];
+    }
+    
+    [path appendString:[NSString stringWithFormat:@"/%@",  fileNameKey]];
 
-+ (void)deleteCachedFileForKey:(NSString *)key {
-
-	NSString * path = [DOCUMENTS_DIRECTORY_PATH stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@/%@%@",CACHE_DIRECTORY_NAME, CACHE_SALT_KEY, key]];
-	NSError *error;
+    NSError *error;
 	if ([[NSFileManager defaultManager] isDeletableFileAtPath:path]) {
 		BOOL success = [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
 		!success ? NSLog(@"Error removing file at path: %@", error.localizedDescription) : NSLog(@"File Deleted");

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = 'MGCacheManager'
-  s.version     = '1.0.2'
+  s.version     = '1.0.4'
   s.summary     = 'A tool to manage caches on disk, useful for API caching and NSEncoder classes instances caching.'
   s.description      = <<-DESC
   Caching is very important in order to speedup you application performace and to decrease API requests and load on your servers. MGCacheManager helps you handle most of caching cases. MGCacheManager is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:

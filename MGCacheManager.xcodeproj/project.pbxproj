@@ -212,9 +212,11 @@
 				TargetAttributes = {
 					50B065351B0C9E7500B9A2E8 = {
 						CreatedOnToolsVersion = 6.3.1;
+						DevelopmentTeam = 64YFRHU84T;
 					};
 					50B0654E1B0C9E7500B9A2E8 = {
 						CreatedOnToolsVersion = 6.3.1;
+						DevelopmentTeam = 64YFRHU84T;
 						TestTargetID = 50B065351B0C9E7500B9A2E8;
 					};
 				};
@@ -224,6 +226,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -450,7 +453,7 @@
 			baseConfigurationReference = 082F81EA6C4C0089FD3EF9F8 /* Pods-MGCacheManager.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 64YFRHU84T;
 				INFOPLIST_FILE = MGCacheManager/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mortgy.$(PRODUCT_NAME:rfc1034identifier)";
@@ -463,7 +466,7 @@
 			baseConfigurationReference = FB433C3B79F0744D3B527469 /* Pods-MGCacheManager.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 64YFRHU84T;
 				INFOPLIST_FILE = MGCacheManager/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mortgy.$(PRODUCT_NAME:rfc1034identifier)";
@@ -475,7 +478,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 64YFRHU84T;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -496,7 +499,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 64YFRHU84T;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",

@@ -28,8 +28,8 @@
 }
 
 - (IBAction)repeatRequestButtonAction:(id)sender {
-	[MGCacheManager deleteAllCachesBeforeDate:@([[NSDate date] timeIntervalSinceNow])];
-	
+    [MGCacheManager deleteCachedFileForFileNameKey:@"posts" fromDirectoryName:nil];
+
 	__weak __typeof(self)weakSelf = self;
 	
 	[self testRequest:^(NSTimeInterval executionTime) {
