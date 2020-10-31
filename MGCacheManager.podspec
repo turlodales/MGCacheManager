@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
                     :tag => s.version.to_s }
   s.license     = { :type => "MIT", :file => "LICENSE" }
 
-  s.platform = s.platforms = { :ios => "6.0", :tvos => "9.0" }
+  s.platform = s.platforms = { :ios => "6.0", :tvos => "10.0" }
   s.requires_arc = true
   s.source_files = 'MGCacheManager/MGCacheManager/*'
   s.tvos.source_files = 'MGCacheManager/MGCacheManager/*'
